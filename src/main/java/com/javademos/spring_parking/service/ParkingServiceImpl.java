@@ -47,17 +47,36 @@ public class ParkingServiceImpl implements ParkingService {
 
     @Override
     public String getParkingLotStatus() {
-        return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Slot No. | Plate No | Colour\n");
+        parkingLot.stream()
+                .filter(slot -> slot.getOccupant().isPresent())
+                .forEach(slot -> {
+                    ParkingLotOccupant occupant = slot.getOccupant().get();
+                    sb.append(String.format("\t%d | %s | %s\n",
+                            slot.getSlotnumber(),
+                            occupant.getPlatenumber(),
+                            occupant.getColor()));
+                });
+        return sb.toString().trim();
     }
 
     @Override
     public List<ParkingLotSlot> getParkingLotSlotsFromOccupantColor(String color) {
-        return List.of();
+        return parkingLot.stream()
+                .filter(slot -> slot.getOccupant()
+                        .map(occupant -> occupant.getColor().equalsIgnoreCase(color))
+                        .orElse(false))
+                .toList();
     }
 
     @Override
     public Optional<ParkingLotSlot> getParkingLotSlotFromOccupantPlateNumber(String platenumber) {
-        return Optional.empty();
+        return parkingLot.stream()
+                .filter(slot -> slot.getOccupant()
+                        .map(occupant -> occupant.getPlatenumber().equalsIgnoreCase(platenumber))
+                        .orElse(false))
+                .findFirst();
     }
 
     private Optional<ParkingLotSlot> findAvailableSlot(Integer slotNumber) {

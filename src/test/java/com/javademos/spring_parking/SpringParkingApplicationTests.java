@@ -113,6 +113,7 @@ class SpringParkingApplicationTests {
 		""";
 		String actual = parkingServiceImpl.getParkingLotStatus();
 		assertEquals(expected.trim(), actual.trim());
+		System.out.println(actual);
 	}
 
 	@Test
