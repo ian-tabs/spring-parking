@@ -25,30 +25,23 @@ public class ParkingServiceImpl implements ParkingService {
 
     @Override
     public void occupyParkingLotSlot(Integer parkingLotSlotNumber, ParkingLotOccupant occupant) {
-        Optional<ParkingLotSlot> wantedParkingSlot = getParkingLotSlotFromSlotNumber(parkingLotSlotNumber);
-        if (wantedParkingSlot.isEmpty()) {
-            return;
-        }
-        ParkingLotSlot targetParkingSlot = wantedParkingSlot.get();
-        if (targetParkingSlot.getOccupant().isPresent()) {
-            return;
-        }
-        targetParkingSlot.setOccupant(occupant);
+        findAvailableSlot(parkingLotSlotNumber)
+                .ifPresent(slot -> slot.setOccupant(occupant));
     }
 
     @Override
-    public ParkingLotOccupant removeParkingLotSlotOccupant(Integer parkingLotSlotNumber) {
-        Optional<ParkingLotSlot> wantedParkingSlot = getParkingLotSlotFromSlotNumber(parkingLotSlotNumber);
-        if (wantedParkingSlot.isEmpty()) {
+    public ParkingLotOccupant removeParkingLotSlotOccupant(Integer slotNumber) {
+        var parkingLotSlotOptional = getParkingLotSlotFromSlotNumber(slotNumber);
+        if (parkingLotSlotOptional.isEmpty()) {
             return null;
         }
-        ParkingLotSlot targetParkingSlot = wantedParkingSlot.get();
-        Optional<ParkingLotOccupant> occupantOpt = targetParkingSlot.getOccupant();
-        if (occupantOpt.isEmpty()) {
+        var parkingSlot = parkingLotSlotOptional.get();
+        var occupantOptional = parkingSlot.getOccupant();
+        if (occupantOptional.isEmpty()) {
             return null;
         }
-        ParkingLotOccupant occupant = occupantOpt.get();
-        targetParkingSlot.setOccupant(null);
+        var occupant = occupantOptional.get();
+        parkingSlot.setOccupant(null);
         return occupant;
     }
 
@@ -65,6 +58,11 @@ public class ParkingServiceImpl implements ParkingService {
     @Override
     public Optional<ParkingLotSlot> getParkingLotSlotFromOccupantPlateNumber(String platenumber) {
         return Optional.empty();
+    }
+
+    private Optional<ParkingLotSlot> findAvailableSlot(Integer slotNumber) {
+        return getParkingLotSlotFromSlotNumber(slotNumber)
+                .filter(slot -> slot.getOccupant().isEmpty());
     }
 
     private Optional<ParkingLotSlot> getParkingLotSlotFromSlotNumber(Integer slotnumber) {
