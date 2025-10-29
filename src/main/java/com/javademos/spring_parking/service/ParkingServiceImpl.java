@@ -2,6 +2,7 @@ package com.javademos.spring_parking.service;
 
 import com.javademos.spring_parking.model.ParkingLotOccupant;
 import com.javademos.spring_parking.model.ParkingLotSlot;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,16 @@ import java.util.Optional;
 @Service
 public class ParkingServiceImpl implements ParkingService {
 
+    @Autowired
+    List<ParkingLotSlot> parkingLot;
+
     @Override
     public void createParkingSlots(Integer size) {
-
+        for (int slotnumber = 1; slotnumber <= size; slotnumber++) {
+            parkingLot.add(ParkingLotSlot.builder()
+                    .slotnumber(slotnumber)
+                    .build());
+        }
     }
 
     @Override
