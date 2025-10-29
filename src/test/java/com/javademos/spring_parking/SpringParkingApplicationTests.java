@@ -68,7 +68,7 @@ class SpringParkingApplicationTests {
 		parkingLot.addAll(List.of(
 				ParkingLotSlot.builder().slotnumber(1).occupant(firstSlotOccupant).build(),
 				ParkingLotSlot.builder().slotnumber(2).occupant(secondSlotOccupant).build(),
-				ParkingLotSlot.builder().slotnumber(3).occupant(null).build(),
+				ParkingLotSlot.builder().slotnumber(3).build(),
 				ParkingLotSlot.builder().slotnumber(4).occupant(fourthSlotOccupant).build()
 		));
 	}
