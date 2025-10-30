@@ -23,27 +23,27 @@ class SpringParkingApplicationTests {
 
 	ParkingLotOccupant newOccupant =  ParkingLotOccupant.builder()
 			.platenumber("ABC-000")
-			.color("White")
+			.colour("White")
 			.build();
 
 	ParkingLotOccupant firstSlotOccupant =  ParkingLotOccupant.builder()
 			.platenumber("ABC-111")
-			.color("Blue")
+			.colour("Blue")
 			.build();
 
 	ParkingLotOccupant secondSlotOccupant =  ParkingLotOccupant.builder()
 			.platenumber("ABC-222")
-			.color("Red")
+			.colour("Red")
 			.build();
 
 	ParkingLotOccupant thirdSlotOccupant =  ParkingLotOccupant.builder()
 			.platenumber("ABC-333")
-			.color("Green")
+			.colour("Green")
 			.build();
 
 	ParkingLotOccupant fourthSlotOccupant =  ParkingLotOccupant.builder()
 			.platenumber("ABC-444")
-			.color("Blue")
+			.colour("Blue")
 			.build();
 
 	@BeforeEach
@@ -76,30 +76,42 @@ class SpringParkingApplicationTests {
 	@Test
 	void createParkingLotSlotsSuccess() {
 		Integer size = 6;
-		parkingServiceImpl.createParkingSlots(size);
+		Optional<List<ParkingLotSlot>> createdSlots = parkingServiceImpl.createParkingSlots(size);
+		assertTrue(createdSlots.isPresent());
 		assertEquals(size, Integer.valueOf(parkingLot.size()));
+		assertEquals(size, Integer.valueOf(createdSlots.get().size()));
 	}
 
 	@Test
-	void occupyParkingLotSlotSuccess() {
+	void occupyAnyParkingLotSlotSuccess() {
+		loadGenericParkingLot();
+		Optional<ParkingLotSlot> occupiedSlot = parkingServiceImpl.occupyAnyParkingLotSlot(newOccupant);
+		assertTrue(occupiedSlot.isPresent()
+						&& occupiedSlot.get().getOccupant().isPresent());
+	}
+
+
+	@Test
+	void occupySpecificParkingLotSlotSuccess() {
 		loadGenericParkingLot();
 		Integer slotNumber = 3;
-		int parkingLotListIndex = 2;
-		parkingServiceImpl.occupyParkingLotSlot(slotNumber, newOccupant);
-		assertTrue(parkingLot.get(parkingLotListIndex).getOccupant().isPresent());
+		Optional<ParkingLotSlot> occupiedSlot = parkingServiceImpl.occupySpecificParkingLotSlot(slotNumber, newOccupant);
+		assertTrue(occupiedSlot.isPresent()
+						&& occupiedSlot.get().getOccupant().isPresent()
+						&& occupiedSlot.get().getSlotnumber().equals(slotNumber));
 	}
 
 	@Test
 	void removeParkingLotOccupantSuccess() {
 		loadFullParkingLot();
-		Integer slotNumber = 1;
-
-		Optional<ParkingLotOccupant> expectedOccupant = parkingLot.get(0).getOccupant();
-		ParkingLotOccupant removedOccupant = parkingServiceImpl.removeParkingLotSlotOccupant(slotNumber);
-
-		assertTrue(expectedOccupant.isPresent() &&
-				expectedOccupant.get().equals(removedOccupant) &&
-				parkingLot.get(0).getOccupant().isEmpty());
+		int slotNumber = 1;
+		int expectedRemovedOccupantParkingLotIndex = 0;
+		Optional<ParkingLotOccupant> expectedRemovedOccupant = parkingLot.get(expectedRemovedOccupantParkingLotIndex).getOccupant();
+		Optional<ParkingLotOccupant> removedOccupant = parkingServiceImpl.removeParkingLotSlotOccupant(slotNumber);
+		assertTrue(removedOccupant.isPresent()
+						&& expectedRemovedOccupant.isPresent()
+						&& expectedRemovedOccupant.equals(removedOccupant)
+						&& parkingLot.get(expectedRemovedOccupantParkingLotIndex).getOccupant().isEmpty());
 	}
 
 	@Test
@@ -121,7 +133,7 @@ class SpringParkingApplicationTests {
 		loadGenericParkingLot();
 		String colorQuery = "Blue";
 		List<Integer> expectedParkingSlotNumbers = List.of(1,4);
-		List<Integer> actualParkingSlotNumbers = parkingServiceImpl.getParkingLotSlotsFromOccupantColor(colorQuery)
+		List<Integer> actualParkingSlotNumbers = parkingServiceImpl.getParkingLotSlotsFromOccupantColour(colorQuery)
 				.stream()
 				.map(ParkingLotSlot::getSlotnumber)
 				.toList();

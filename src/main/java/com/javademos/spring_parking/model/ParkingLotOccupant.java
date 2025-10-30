@@ -8,6 +8,5 @@ import lombok.*;
 @Builder
 public class ParkingLotOccupant {
     private String platenumber;
-    private String color;
-
+    private String colour;
 }

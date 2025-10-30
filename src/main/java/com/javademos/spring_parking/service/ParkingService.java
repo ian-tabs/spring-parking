@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ParkingService {
-     void createParkingSlots(Integer size);
-     void occupyParkingLotSlot(Integer parkingLotSlotNumber, ParkingLotOccupant occupant);
-     ParkingLotOccupant removeParkingLotSlotOccupant(Integer parkingLotSlotNumber);
+     Optional<List<ParkingLotSlot>> createParkingSlots(Integer size);
+     Optional<ParkingLotSlot> occupyAnyParkingLotSlot(ParkingLotOccupant occupant);
+     Optional<ParkingLotSlot> occupySpecificParkingLotSlot(Integer parkingLotSlotNumber, ParkingLotOccupant occupant);
+     Optional<ParkingLotOccupant> removeParkingLotSlotOccupant(Integer parkingLotSlotNumber);
      String getParkingLotStatus();
-     List<ParkingLotSlot> getParkingLotSlotsFromOccupantColor(String color);
+     List<ParkingLotSlot> getParkingLotSlotsFromOccupantColour(String color);
      Optional<ParkingLotSlot> getParkingLotSlotFromOccupantPlateNumber(String platenumber);
 }
