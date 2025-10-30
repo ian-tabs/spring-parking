@@ -1,5 +1,9 @@
 package com.javademos.spring_parking;
 
+import com.javademos.spring_parking.model.ParkingLotOccupant;
+import com.javademos.spring_parking.model.ParkingLotSlot;
+import com.javademos.spring_parking.service.ParkingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +12,9 @@ import java.util.*;
 
 @Component
 public class ExecuteParkingCommands implements CommandLineRunner {
+
+    @Autowired
+    ParkingService parkingServiceImpl;
 
     final int PARKING_COMMANDS_FILE_INDEX = 0;
     final int PARKING_OUTPUT_FILE_INDEX = 1;
@@ -53,11 +60,22 @@ public class ExecuteParkingCommands implements CommandLineRunner {
     }
 
     private String runCommandCreateParkingLot(List<String> commandArgs) {
-        return "";
+        Integer size = Integer.parseInt(commandArgs.get(0));
+        parkingServiceImpl.createParkingSlots(size);
+        return String.format("Created a parking lot with %d slot(s)", size);
     }
 
     private String runCommandPark(List<String> commandArgs) {
-        return "";
+        int COMMAND_PARK_PLATE_NUMBER_INDEX = 0;
+        int COMMAND_PARK_COLOUR_INDEX = 1;
+        ParkingLotOccupant occupant = ParkingLotOccupant.builder()
+                .platenumber(commandArgs.get(COMMAND_PARK_PLATE_NUMBER_INDEX))
+                .colour(commandArgs.get(COMMAND_PARK_COLOUR_INDEX))
+                .build();
+        Optional<ParkingLotSlot> occupiedSlotOptional = parkingServiceImpl.occupyAnyParkingLotSlot(occupant);
+        return occupiedSlotOptional
+                .map(slot -> String.format("Allocated slot number: %d", slot.getSlotnumber()))
+                .orElse("Sorry, parking lot is full");
     }
 
     private String runCommandLeave(List<String> commandArgs) {
