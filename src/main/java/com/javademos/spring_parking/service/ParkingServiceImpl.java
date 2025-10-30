@@ -5,8 +5,7 @@ import com.javademos.spring_parking.model.ParkingLotSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ParkingServiceImpl implements ParkingService {
@@ -15,34 +14,44 @@ public class ParkingServiceImpl implements ParkingService {
     List<ParkingLotSlot> parkingLot;
 
     @Override
-    public void createParkingSlots(Integer size) {
-        for (int slotnumber = 1; slotnumber <= size; slotnumber++) {
-            parkingLot.add(ParkingLotSlot.builder()
-                    .slotnumber(slotnumber)
-                    .build());
+    public Optional<List<ParkingLotSlot>> createParkingSlots(Integer size) {
+        if (size == null || size < 0) {
+            return Optional.empty();
         }
+        List<ParkingLotSlot> newSlots = new ArrayList<>();
+        for (int slotNumber = 1; slotNumber <= size; slotNumber++) {
+            ParkingLotSlot slot = ParkingLotSlot.builder()
+                    .slotnumber(slotNumber)
+                    .build();
+            parkingLot.add(slot);
+            newSlots.add(slot);
+        }
+        return Optional.of(newSlots);
     }
 
     @Override
-    public void occupyParkingLotSlot(Integer parkingLotSlotNumber, ParkingLotOccupant occupant) {
-        findAvailableSlot(parkingLotSlotNumber)
-                .ifPresent(slot -> slot.setOccupant(occupant));
+    public Optional<ParkingLotSlot> occupyAnyParkingLotSlot(ParkingLotOccupant occupant) {
+        return findFirstAvailableParkingSlot().map(slot -> {
+            slot.setOccupant(occupant);
+            return slot;
+        });
     }
 
     @Override
-    public ParkingLotOccupant removeParkingLotSlotOccupant(Integer slotNumber) {
-        var parkingLotSlotOptional = getParkingLotSlotFromSlotNumber(slotNumber);
-        if (parkingLotSlotOptional.isEmpty()) {
-            return null;
-        }
-        var parkingSlot = parkingLotSlotOptional.get();
-        var occupantOptional = parkingSlot.getOccupant();
-        if (occupantOptional.isEmpty()) {
-            return null;
-        }
-        var occupant = occupantOptional.get();
-        parkingSlot.setOccupant(null);
-        return occupant;
+    public Optional<ParkingLotSlot> occupySpecificParkingLotSlot(Integer parkingLotSlotNumber, ParkingLotOccupant occupant) {
+        return getSlotIfAvailable(parkingLotSlotNumber).map(slot -> {
+            slot.setOccupant(occupant);
+            return slot;
+        });
+    }
+
+    @Override
+    public Optional<ParkingLotOccupant> removeParkingLotSlotOccupant(Integer slotNumber) {
+        return getParkingLotSlotFromSlotNumber(slotNumber)
+                        .flatMap(slot -> slot.getOccupant().map(occupant -> {
+                            slot.setOccupant(null);
+                            return occupant;
+                        }));
     }
 
     @Override
@@ -56,16 +65,16 @@ public class ParkingServiceImpl implements ParkingService {
                     sb.append(String.format("\t%d | %s | %s\n",
                             slot.getSlotnumber(),
                             occupant.getPlatenumber(),
-                            occupant.getColor()));
+                            occupant.getColour()));
                 });
         return sb.toString().trim();
     }
 
     @Override
-    public List<ParkingLotSlot> getParkingLotSlotsFromOccupantColor(String color) {
+    public List<ParkingLotSlot> getParkingLotSlotsFromOccupantColour(String color) {
         return parkingLot.stream()
                 .filter(slot -> slot.getOccupant()
-                        .map(occupant -> occupant.getColor().equalsIgnoreCase(color))
+                        .map(occupant -> occupant.getColour().equalsIgnoreCase(color))
                         .orElse(false))
                 .toList();
     }
@@ -79,7 +88,13 @@ public class ParkingServiceImpl implements ParkingService {
                 .findFirst();
     }
 
-    private Optional<ParkingLotSlot> findAvailableSlot(Integer slotNumber) {
+    private Optional<ParkingLotSlot> findFirstAvailableParkingSlot() {
+        return parkingLot.stream()
+                .filter(slot -> slot.getOccupant().isEmpty())
+                .findFirst();
+    }
+
+    private Optional<ParkingLotSlot> getSlotIfAvailable(Integer slotNumber) {
         return getParkingLotSlotFromSlotNumber(slotNumber)
                 .filter(slot -> slot.getOccupant().isEmpty());
     }
