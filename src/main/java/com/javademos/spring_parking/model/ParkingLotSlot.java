@@ -8,7 +8,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 public class ParkingLotSlot {
-    private Integer slotnumber;
+    private Integer slotNumber;
     private ParkingLotOccupant occupant;
 
     public Optional<ParkingLotOccupant> getOccupant() {
