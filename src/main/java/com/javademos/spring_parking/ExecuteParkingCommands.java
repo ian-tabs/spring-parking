@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ExecuteParkingCommands implements CommandLineRunner {
@@ -71,21 +72,21 @@ public class ExecuteParkingCommands implements CommandLineRunner {
     private String runCommandPark(List<String> commandArgs) {
         int COMMAND_PARK_PLATE_NUMBER_INDEX = 0;
         int COMMAND_PARK_COLOUR_INDEX = 1;
-        ParkingLotOccupant occupant = ParkingLotOccupant.builder()
-                .platenumber(commandArgs.get(COMMAND_PARK_PLATE_NUMBER_INDEX))
+        var occupant = ParkingLotOccupant.builder()
+                .registrationNumber(commandArgs.get(COMMAND_PARK_PLATE_NUMBER_INDEX))
                 .colour(commandArgs.get(COMMAND_PARK_COLOUR_INDEX))
                 .build();
-        Optional<ParkingLotSlot> occupiedSlotOptional = parkingServiceImpl.occupyAnyParkingLotSlot(occupant);
+        var occupiedSlotOptional = parkingServiceImpl.occupyAnyParkingLotSlot(occupant);
         return occupiedSlotOptional
-                .map(slot -> String.format("Allocated slot number: %d", slot.getSlotnumber()))
+                .map(slot -> String.format("Allocated slot number: %d", slot.getSlotNumber()))
                 .orElse("Sorry, parking lot is full");
     }
 
     private String runCommandLeave(List<String> commandArgs) {
         int COMMAND_LEAVE_SLOT_NUMBER_INDEX = 0;
         Integer slotNumber = Integer.parseInt(commandArgs.get(COMMAND_LEAVE_SLOT_NUMBER_INDEX));
-        Optional<ParkingLotOccupant> removedOccupant = parkingServiceImpl.removeParkingLotSlotOccupant(slotNumber);
-        return removedOccupant
+        var removedOccupantOptional = parkingServiceImpl.removeParkingLotSlotOccupant(slotNumber);
+        return removedOccupantOptional
                 .map(occupant -> String.format("Slot number %d is free", slotNumber))
                 .orElse(String.format("Slot number %d was already empty or does not exist", slotNumber));
     }
@@ -95,15 +96,40 @@ public class ExecuteParkingCommands implements CommandLineRunner {
     }
 
     private String runCommandPlateNumbersForCarsWithColour(List<String> commandArgs) {
-        return "";
+        int COMMAND_PLATE_NUMBERS_FOR_CARS_WITH_COLOUR_COLOUR_INDEX = 0;
+        String colour = commandArgs.get(COMMAND_PLATE_NUMBERS_FOR_CARS_WITH_COLOUR_COLOUR_INDEX);
+        var slots = parkingServiceImpl.getParkingLotSlotsFromOccupantColour(colour);
+        if (slots.isEmpty()) {
+            return String.format("No occupants found with colour: %s",colour);
+        }
+        return slots.stream()
+                .map(ParkingLotSlot::getOccupant)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(ParkingLotOccupant::getRegistrationNumber)
+                .collect(Collectors.joining(", "));
     }
 
     private String runCommandSlotNumbersForCarsWithColour(List<String> commandArgs) {
-        return "";
+        int COMMAND_SLOT_NUMBERS_FOR_CARS_WITH_COLOUR_COLOUR_INDEX = 0;
+        String colour = commandArgs.get(COMMAND_SLOT_NUMBERS_FOR_CARS_WITH_COLOUR_COLOUR_INDEX);
+        var slots = parkingServiceImpl.getParkingLotSlotsFromOccupantColour(colour);
+        if (slots.isEmpty()) {
+            return String.format("No occupants found with colour: %s",colour);
+        }
+        return slots.stream()
+                .map(slot -> String.valueOf(slot.getSlotNumber()))
+                .collect(Collectors.joining(", "));
     }
 
     private String runCommandSlotNumbersForCarsWithRegistrationNumber(List<String> commandArgs) {
-        return "";
+        int COMMAND_SLOT_NUMBERS_FOR_CARS_WITH_REGISTRATION_NUMBER_REGISTRATION_NUMBER_INDEX = 0;
+        String registrationNumber = commandArgs.get(COMMAND_SLOT_NUMBERS_FOR_CARS_WITH_REGISTRATION_NUMBER_REGISTRATION_NUMBER_INDEX);
+        var slotOptional = parkingServiceImpl.getParkingLotSlotFromOccupantPlateNumber(registrationNumber);
+        return slotOptional
+                .map(slot -> String.valueOf(slot.getSlotNumber()))
+                .orElse(String.format("Plate number %s not found in parking lot", registrationNumber));
     }
+
 
 }

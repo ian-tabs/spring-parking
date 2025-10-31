@@ -21,7 +21,7 @@ public class ParkingServiceImpl implements ParkingService {
         List<ParkingLotSlot> newSlots = new ArrayList<>();
         for (int slotNumber = 1; slotNumber <= size; slotNumber++) {
             ParkingLotSlot slot = ParkingLotSlot.builder()
-                    .slotnumber(slotNumber)
+                    .slotNumber(slotNumber)
                     .build();
             parkingLot.add(slot);
             newSlots.add(slot);
@@ -63,8 +63,8 @@ public class ParkingServiceImpl implements ParkingService {
                 .forEach(slot -> {
                     ParkingLotOccupant occupant = slot.getOccupant().get();
                     sb.append(String.format("\t%d | %s | %s\n",
-                            slot.getSlotnumber(),
-                            occupant.getPlatenumber(),
+                            slot.getSlotNumber(),
+                            occupant.getRegistrationNumber(),
                             occupant.getColour()));
                 });
         return sb.toString().trim();
@@ -83,7 +83,7 @@ public class ParkingServiceImpl implements ParkingService {
     public Optional<ParkingLotSlot> getParkingLotSlotFromOccupantPlateNumber(String platenumber) {
         return parkingLot.stream()
                 .filter(slot -> slot.getOccupant()
-                        .map(occupant -> occupant.getPlatenumber().equalsIgnoreCase(platenumber))
+                        .map(occupant -> occupant.getRegistrationNumber().equalsIgnoreCase(platenumber))
                         .orElse(false))
                 .findFirst();
     }
