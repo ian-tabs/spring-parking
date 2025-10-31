@@ -14,9 +14,9 @@ public class ParkingServiceImpl implements ParkingService {
     List<ParkingLotSlot> parkingLot;
 
     @Override
-    public Optional<List<ParkingLotSlot>> createParkingSlots(Integer size) {
+    public List<ParkingLotSlot> createParkingSlots(Integer size) {
         if (size == null || size < 0) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         List<ParkingLotSlot> newSlots = new ArrayList<>();
         for (int slotNumber = 1; slotNumber <= size; slotNumber++) {
@@ -26,7 +26,7 @@ public class ParkingServiceImpl implements ParkingService {
             parkingLot.add(slot);
             newSlots.add(slot);
         }
-        return Optional.of(newSlots);
+        return newSlots;
     }
 
     @Override
