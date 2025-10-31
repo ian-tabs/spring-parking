@@ -7,6 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ParkingLotOccupant {
-    private String platenumber;
+    private String registrationNumber;
     private String colour;
 }

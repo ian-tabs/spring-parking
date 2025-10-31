@@ -22,27 +22,27 @@ class SpringParkingApplicationTests {
 	ParkingService parkingServiceImpl;
 
 	ParkingLotOccupant newOccupant =  ParkingLotOccupant.builder()
-			.platenumber("ABC-000")
+			.registrationNumber("ABC-000")
 			.colour("White")
 			.build();
 
 	ParkingLotOccupant firstSlotOccupant =  ParkingLotOccupant.builder()
-			.platenumber("ABC-111")
+			.registrationNumber("ABC-111")
 			.colour("Blue")
 			.build();
 
 	ParkingLotOccupant secondSlotOccupant =  ParkingLotOccupant.builder()
-			.platenumber("ABC-222")
+			.registrationNumber("ABC-222")
 			.colour("Red")
 			.build();
 
 	ParkingLotOccupant thirdSlotOccupant =  ParkingLotOccupant.builder()
-			.platenumber("ABC-333")
+			.registrationNumber("ABC-333")
 			.colour("Green")
 			.build();
 
 	ParkingLotOccupant fourthSlotOccupant =  ParkingLotOccupant.builder()
-			.platenumber("ABC-444")
+			.registrationNumber("ABC-444")
 			.colour("Blue")
 			.build();
 
@@ -57,19 +57,19 @@ class SpringParkingApplicationTests {
 
 	void loadFullParkingLot() {
 		parkingLot.addAll(List.of(
-				ParkingLotSlot.builder().slotnumber(1).occupant(firstSlotOccupant).build(),
-				ParkingLotSlot.builder().slotnumber(2).occupant(secondSlotOccupant).build(),
-				ParkingLotSlot.builder().slotnumber(3).occupant(thirdSlotOccupant).build(),
-				ParkingLotSlot.builder().slotnumber(4).occupant(fourthSlotOccupant).build()
+				ParkingLotSlot.builder().slotNumber(1).occupant(firstSlotOccupant).build(),
+				ParkingLotSlot.builder().slotNumber(2).occupant(secondSlotOccupant).build(),
+				ParkingLotSlot.builder().slotNumber(3).occupant(thirdSlotOccupant).build(),
+				ParkingLotSlot.builder().slotNumber(4).occupant(fourthSlotOccupant).build()
 		));
 	}
 
 	void loadGenericParkingLot() {
 		parkingLot.addAll(List.of(
-				ParkingLotSlot.builder().slotnumber(1).occupant(firstSlotOccupant).build(),
-				ParkingLotSlot.builder().slotnumber(2).occupant(secondSlotOccupant).build(),
-				ParkingLotSlot.builder().slotnumber(3).build(),
-				ParkingLotSlot.builder().slotnumber(4).occupant(fourthSlotOccupant).build()
+				ParkingLotSlot.builder().slotNumber(1).occupant(firstSlotOccupant).build(),
+				ParkingLotSlot.builder().slotNumber(2).occupant(secondSlotOccupant).build(),
+				ParkingLotSlot.builder().slotNumber(3).build(),
+				ParkingLotSlot.builder().slotNumber(4).occupant(fourthSlotOccupant).build()
 		));
 	}
 
@@ -100,7 +100,7 @@ class SpringParkingApplicationTests {
 		Optional<ParkingLotSlot> occupiedSlot = parkingServiceImpl.occupySpecificParkingLotSlot(slotNumber, newOccupant);
 		assertTrue(occupiedSlot.isPresent()
 						&& occupiedSlot.get().getOccupant().isPresent()
-						&& occupiedSlot.get().getSlotnumber().equals(slotNumber));
+						&& occupiedSlot.get().getSlotNumber().equals(slotNumber));
 	}
 
 	@Test
@@ -137,7 +137,7 @@ class SpringParkingApplicationTests {
 		List<Integer> expectedParkingSlotNumbers = List.of(1,4);
 		List<Integer> actualParkingSlotNumbers = parkingServiceImpl.getParkingLotSlotsFromOccupantColour(colorQuery)
 				.stream()
-				.map(ParkingLotSlot::getSlotnumber)
+				.map(ParkingLotSlot::getSlotNumber)
 				.toList();
 		assertEquals(expectedParkingSlotNumbers, actualParkingSlotNumbers);
 	}
@@ -148,7 +148,7 @@ class SpringParkingApplicationTests {
 		Integer expectedSlotNumber = 1;
 		String plateNumberQuery = "ABC-111";
 		Optional<ParkingLotSlot> result = parkingServiceImpl.getParkingLotSlotFromOccupantPlateNumber(plateNumberQuery);
-		assertTrue(result.isPresent() && expectedSlotNumber.equals(result.get().getSlotnumber()));
+		assertTrue(result.isPresent() && expectedSlotNumber.equals(result.get().getSlotNumber()));
 	}
 
 }

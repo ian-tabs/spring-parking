@@ -35,12 +35,12 @@ class ExecuteParkingCommandsTests {
         int validParkingLotSize = 6;
         when(parkingServiceMock.createParkingSlots(validParkingLotSize))
                 .thenReturn(List.of(
-                        ParkingLotSlot.builder().slotnumber(1).build(),
-                        ParkingLotSlot.builder().slotnumber(2).build(),
-                        ParkingLotSlot.builder().slotnumber(3).build(),
-                        ParkingLotSlot.builder().slotnumber(4).build(),
-                        ParkingLotSlot.builder().slotnumber(5).build(),
-                        ParkingLotSlot.builder().slotnumber(6).build()
+                        ParkingLotSlot.builder().slotNumber(1).build(),
+                        ParkingLotSlot.builder().slotNumber(2).build(),
+                        ParkingLotSlot.builder().slotNumber(3).build(),
+                        ParkingLotSlot.builder().slotNumber(4).build(),
+                        ParkingLotSlot.builder().slotNumber(5).build(),
+                        ParkingLotSlot.builder().slotNumber(6).build()
                 ));
         String result = executeParkingCommands.getSystemResponseFromCommand(String.format("create_parking_lot %d",validParkingLotSize));
         assertEquals(String.format("Created a parking lot with %d slot(s)",validParkingLotSize), result);
@@ -59,13 +59,13 @@ class ExecuteParkingCommandsTests {
     void testCommandParkSuccess() {
         String plateNumber = "ABC-1234";
         String colour = "White";
-        ParkingLotSlot mockedOccupiedSlot = ParkingLotSlot.builder().slotnumber(1).build();
+        ParkingLotSlot mockedOccupiedSlot = ParkingLotSlot.builder().slotNumber(1).build();
         when(parkingServiceMock.occupyAnyParkingLotSlot(any(ParkingLotOccupant.class)))
                 .thenReturn(Optional.of(mockedOccupiedSlot));
         String result = executeParkingCommands.getSystemResponseFromCommand(
                 String.format("park %s %s", plateNumber, colour)
         );
-        assertEquals(String.format("Allocated slot number: %d", mockedOccupiedSlot.getSlotnumber()), result);
+        assertEquals(String.format("Allocated slot number: %d", mockedOccupiedSlot.getSlotNumber()), result);
     }
 
     @Test
@@ -85,7 +85,7 @@ class ExecuteParkingCommandsTests {
         int slotNumber = 4;
         when(parkingServiceMock.removeParkingLotSlotOccupant(slotNumber))
                 .thenReturn(Optional.of(ParkingLotOccupant.builder()
-                        .platenumber("ABC-7777")
+                        .registrationNumber("ABC-7777")
                         .colour("Red")
                         .build()));
         String result = executeParkingCommands.getSystemResponseFromCommand(String.format("leave %d", slotNumber));
@@ -118,35 +118,35 @@ class ExecuteParkingCommandsTests {
     void testCommandPlateNumbersForCarsWithColourSuccess() {
         String presentColour = "White";
         var occupantOne = ParkingLotOccupant.builder()
-                .platenumber("ABC-1234")
+                .registrationNumber("ABC-1234")
                 .colour(presentColour)
                 .build();
         var occupantTwo = ParkingLotOccupant.builder()
-                .platenumber("ABC-9999")
+                .registrationNumber("ABC-9999")
                 .colour(presentColour)
                 .build();
         var occupantFour = ParkingLotOccupant.builder()
-                .platenumber("ABC-333")
+                .registrationNumber("ABC-333")
                 .colour(presentColour)
                 .build();
         List<ParkingLotSlot> slots = List.of(
                 ParkingLotSlot.builder()
-                        .slotnumber(1)
+                        .slotNumber(1)
                         .occupant(occupantOne)
                         .build(),
                 ParkingLotSlot.builder()
-                        .slotnumber(2)
+                        .slotNumber(2)
                         .occupant(occupantTwo)
                         .build(),
                 ParkingLotSlot.builder()
-                        .slotnumber(4)
+                        .slotNumber(4)
                         .occupant(occupantFour)
                         .build()
         );
         when(parkingServiceMock.getParkingLotSlotsFromOccupantColour(presentColour))
                 .thenReturn(slots);
         String result = executeParkingCommands.getSystemResponseFromCommand(String.format("plate_numbers_for_cars_with_colour %s",presentColour));
-        assertEquals(String.format("%s, %s, %s",occupantOne.getPlatenumber(),occupantTwo.getPlatenumber(),occupantFour.getPlatenumber()), result);
+        assertEquals(String.format("%s, %s, %s",occupantOne.getRegistrationNumber(),occupantTwo.getRegistrationNumber(),occupantFour.getRegistrationNumber()), result);
     }
 
     @Test
@@ -162,28 +162,28 @@ class ExecuteParkingCommandsTests {
     void testCommandSlotNumbersForCarsWithColourSuccess() {
         String presentColour = "White";
         var occupantOne = ParkingLotOccupant.builder()
-                .platenumber("ABC-1234")
+                .registrationNumber("ABC-1234")
                 .colour(presentColour)
                 .build();
         var occupantTwo = ParkingLotOccupant.builder()
-                .platenumber("ABC-9999")
+                .registrationNumber("ABC-9999")
                 .colour(presentColour)
                 .build();
         var occupantFour = ParkingLotOccupant.builder()
-                .platenumber("ABC-333")
+                .registrationNumber("ABC-333")
                 .colour(presentColour)
                 .build();
         List<ParkingLotSlot> slots = List.of(
                 ParkingLotSlot.builder()
-                        .slotnumber(1)
+                        .slotNumber(1)
                         .occupant(occupantOne)
                         .build(),
                 ParkingLotSlot.builder()
-                        .slotnumber(2)
+                        .slotNumber(2)
                         .occupant(occupantTwo)
                         .build(),
                 ParkingLotSlot.builder()
-                        .slotnumber(4)
+                        .slotNumber(4)
                         .occupant(occupantFour)
                         .build()
         );
@@ -192,7 +192,7 @@ class ExecuteParkingCommandsTests {
         String result = executeParkingCommands.getSystemResponseFromCommand(
                 String.format("slot_numbers_for_cars_with_colour %s", presentColour)
         );
-        assertEquals(String.format("%d, %d, %d",slots.get(0).getSlotnumber(),slots.get(1).getSlotnumber(),slots.get(2).getSlotnumber()), result);
+        assertEquals(String.format("%d, %d, %d",slots.get(0).getSlotNumber(),slots.get(1).getSlotNumber(),slots.get(2).getSlotNumber()), result);
     }
 
     @Test
@@ -208,12 +208,12 @@ class ExecuteParkingCommandsTests {
     void testCommandSlotNumberForRegistrationNumberSuccess() {
         String existingPlateNumber = "ABC-3141";
         var foundOccupant = ParkingLotOccupant.builder()
-                .platenumber(existingPlateNumber)
+                .registrationNumber(existingPlateNumber)
                 .build();
         int expectedSlotNumber = 6;
         when(parkingServiceMock.getParkingLotSlotFromOccupantPlateNumber(existingPlateNumber))
                 .thenReturn(Optional.of(ParkingLotSlot.builder()
-                        .slotnumber(expectedSlotNumber)
+                        .slotNumber(expectedSlotNumber)
                         .occupant(foundOccupant)
                         .build()));
         String result = executeParkingCommands.getSystemResponseFromCommand(
