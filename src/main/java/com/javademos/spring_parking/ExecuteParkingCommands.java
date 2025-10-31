@@ -40,7 +40,7 @@ public class ExecuteParkingCommands implements CommandLineRunner {
         }
     }
 
-    private String getSystemResponseFromCommand (String commandLine) {
+    public String getSystemResponseFromCommand (String commandLine) {
         String REGEX_PATTERN_MULTI_WHITESPACE = "\\s+";
         List<String> splitCommandLine = new ArrayList<>(Arrays.asList(commandLine.split(REGEX_PATTERN_MULTI_WHITESPACE)));
         String commandAction = splitCommandLine.get(0);
@@ -50,7 +50,7 @@ public class ExecuteParkingCommands implements CommandLineRunner {
             case "create_parking_lot" -> systemResponse = runCommandCreateParkingLot(commandArgs);
             case "park" -> systemResponse = runCommandPark(commandArgs);
             case "leave" -> systemResponse = runCommandLeave(commandArgs);
-            case "status" -> systemResponse = runCommandStatus(commandArgs);
+            case "status" -> systemResponse = runCommandStatus();
             case "plate_numbers_for_cars_with_colour" -> systemResponse = runCommandPlateNumbersForCarsWithColour(commandArgs);
             case "slot_numbers_for_cars_with_colour" -> systemResponse = runCommandSlotNumbersForCarsWithColour(commandArgs);
             case "slot_number_for_registration_number" -> systemResponse = runCommandSlotNumbersForCarsWithRegistrationNumber(commandArgs);
@@ -61,8 +61,11 @@ public class ExecuteParkingCommands implements CommandLineRunner {
 
     private String runCommandCreateParkingLot(List<String> commandArgs) {
         Integer size = Integer.parseInt(commandArgs.get(0));
-        parkingServiceImpl.createParkingSlots(size);
-        return String.format("Created a parking lot with %d slot(s)", size);
+        var newParkingSlots = parkingServiceImpl.createParkingSlots(size);
+        if (newParkingSlots.isEmpty()) {
+            return "Invalid parking lot size";
+        }
+        return String.format("Created a parking lot with %d slot(s)", newParkingSlots.size());
     }
 
     private String runCommandPark(List<String> commandArgs) {
@@ -79,11 +82,16 @@ public class ExecuteParkingCommands implements CommandLineRunner {
     }
 
     private String runCommandLeave(List<String> commandArgs) {
-        return "";
+        int COMMAND_LEAVE_SLOT_NUMBER_INDEX = 0;
+        Integer slotNumber = Integer.parseInt(commandArgs.get(COMMAND_LEAVE_SLOT_NUMBER_INDEX));
+        Optional<ParkingLotOccupant> removedOccupant = parkingServiceImpl.removeParkingLotSlotOccupant(slotNumber);
+        return removedOccupant
+                .map(occupant -> String.format("Slot number %d is free", slotNumber))
+                .orElse(String.format("Slot number %d was already empty or does not exist", slotNumber));
     }
 
-    private String runCommandStatus(List<String> commandArgs) {
-        return "";
+    private String runCommandStatus() {
+        return parkingServiceImpl.getParkingLotStatus();
     }
 
     private String runCommandPlateNumbersForCarsWithColour(List<String> commandArgs) {
