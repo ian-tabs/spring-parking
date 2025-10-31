@@ -76,11 +76,13 @@ class SpringParkingApplicationTests {
 	@Test
 	void createParkingLotSlotsSuccess() {
 		Integer size = 6;
-		Optional<List<ParkingLotSlot>> createdSlots = parkingServiceImpl.createParkingSlots(size);
-		assertTrue(createdSlots.isPresent());
-		assertEquals(size, Integer.valueOf(parkingLot.size()));
-		assertEquals(size, Integer.valueOf(createdSlots.get().size()));
+		List<ParkingLotSlot> createdSlots = parkingServiceImpl.createParkingSlots(size);
+
+		assertNotNull(createdSlots);
+		assertEquals(size, parkingLot.size());
+		assertEquals(size, createdSlots.size());
 	}
+
 
 	@Test
 	void occupyAnyParkingLotSlotSuccess() {
