@@ -13,7 +13,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class SpringParkingApplicationTests {
+class ParkingServiceCommandLineImplUnitTests {
 
 	@Autowired
 	List<ParkingLotSlot> parkingLot;
