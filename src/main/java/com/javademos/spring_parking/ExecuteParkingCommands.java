@@ -84,7 +84,6 @@ public class ExecuteParkingCommands implements CommandLineRunner {
         Path commandFile = null;
         boolean showHelp = false;
         boolean showVersion = false;
-
         for (String arg : args) {
             switch (arg) {
                 case FLAG_HELP, FLAG_HELP_SHORT -> showHelp = true;
@@ -93,6 +92,7 @@ public class ExecuteParkingCommands implements CommandLineRunner {
                     if (arg.startsWith("-")) {
                         return builder.error(String.format("Unknown flag: %s", arg)).build();
                     }
+//                    TODO: ability to process multiple command files as args in sequence
                     if (commandFile != null) {
                         return builder.error(String.format(
                                 "Unexpected argument: %s. %s already provided", arg, commandFile
@@ -131,6 +131,7 @@ public class ExecuteParkingCommands implements CommandLineRunner {
         };
     }
 
+//    TODO: move command action methods to a service
     private String runCommandCreateParkingLot(List<String> args) {
         Integer size = Integer.parseInt(args.get(0));
         var newSlots = parkingServiceImpl.createParkingSlots(size);

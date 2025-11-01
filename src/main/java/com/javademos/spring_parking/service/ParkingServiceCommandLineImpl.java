@@ -88,6 +88,30 @@ public class ParkingServiceCommandLineImpl implements ParkingService {
                 .findFirst();
     }
 
+    @Override
+    public List<ParkingLotSlot> findEmptyParkingSlots() {
+        return parkingLot.stream()
+                .filter(slot -> slot.getOccupant().isEmpty())
+                .toList();
+    }
+
+    @Override
+    public void removeParkingLotSlots(List<Integer> slotNumbers) {
+        if (slotNumbers == null || slotNumbers.isEmpty()) {
+            return;
+        }
+        slotNumbers.stream()
+                .sorted(Comparator.reverseOrder())
+                .forEach(slotNumber -> {
+                    var slotOpt = getParkingLotSlotFromSlotNumber(slotNumber);
+                    slotOpt.ifPresent(slot -> {
+                        if (slot.getOccupant().isEmpty()) {
+                            parkingLot.remove(slotNumber - 1);
+                        }
+                    });
+                });
+    }
+
     private Optional<ParkingLotSlot> findFirstAvailableParkingSlot() {
         return parkingLot.stream()
                 .filter(slot -> slot.getOccupant().isEmpty())

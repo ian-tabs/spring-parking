@@ -72,7 +72,7 @@ class ParkingServiceCommandLineImplUnitTests {
 				ParkingLotSlot.builder().slotNumber(4).occupant(fourthSlotOccupant).build()
 		));
 	}
-
+//	TODO: add assert messages
 	@Test
 	void createParkingLotSlotsSuccess() {
 		Integer size = 6;
@@ -150,5 +150,31 @@ class ParkingServiceCommandLineImplUnitTests {
 		Optional<ParkingLotSlot> result = parkingServiceImpl.getParkingLotSlotFromOccupantPlateNumber(plateNumberQuery);
 		assertTrue(result.isPresent() && expectedSlotNumber.equals(result.get().getSlotNumber()));
 	}
+
+	@Test
+	void findEmptyParkingSlotsSuccess() {
+		loadGenericParkingLot();
+		List<ParkingLotSlot> emptySlots = parkingLot.stream()
+				.filter(slot -> slot.getOccupant().isEmpty())
+				.toList();
+
+		assertEquals(1, emptySlots.size());
+		assertEquals(3, emptySlots.get(0).getSlotNumber());
+	}
+
+	@Test
+	void removeParkingLotSlotsSuccess() {
+		loadGenericParkingLot();
+		List<Integer> slotsToRemove = List.of(3, 4);
+
+		parkingServiceImpl.removeParkingLotSlots(slotsToRemove);
+
+		assertEquals(3, parkingLot.size());
+		assertEquals(1, parkingLot.get(0).getSlotNumber());
+		assertEquals(2, parkingLot.get(1).getSlotNumber());
+		assertEquals(4, parkingLot.get(2).getSlotNumber());
+		assertTrue(parkingLot.get(2).getOccupant().isPresent());
+	}
+
 
 }
