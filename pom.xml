@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.javademos</groupId>
 	<artifactId>spring-parking</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>spring-parking</name>
 	<description>A simple parking system</description>
 	<url/>
@@ -49,6 +49,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>spring-parking</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
