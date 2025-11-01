@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class ParkingServiceImpl implements ParkingService {
+public class ParkingServiceCommandLineImpl implements ParkingService {
 
     @Autowired
     List<ParkingLotSlot> parkingLot;
