@@ -31,7 +31,7 @@ public class ExecuteParkingCommands implements CommandLineRunner {
 
     private static final String HOW_TO_USE = """
         Usage:
-          java -jar parking-lot.jar <parking commands file> [options]
+          java -jar spring-parking.jar <parking commands file> [options]
 
         Options:
           --help, -h      Show this help message.
@@ -105,7 +105,7 @@ public class ExecuteParkingCommands implements CommandLineRunner {
 
         boolean invalid = (commandFile == null && !showHelp && !showVersion);
         if (invalid) {
-            return builder.error("No command file or flags provided.").build();
+            return builder.error("No command file or flags provided. Use flag -h or --help for a User Guide").build();
         }
 
         return builder
