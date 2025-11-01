@@ -36,11 +36,11 @@ https://github.com/ian-tabs/spring-parking/releases/
 
 ---
 
-## How to Run
+## How to Run Jar File
 
-To run the app, provide a command file. Flags are optional:
+To run the app type the following syntax in the command line. Flags are optional.
 
-java -jar spring-parking.jar <commands-file> [options]
+java -jar spring-parking.jar <parking-commands-file.txt> [options]
 
 Options:
 - `--help` or `-h` : Show help message
@@ -50,4 +50,4 @@ Example:
 
 `java -jar target/spring-parking.jar commands.txt`
 
-Assuming file is still in target folder after `mvn package`
+Assuming jar file is still in target folder after `mvn package`
